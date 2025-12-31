@@ -9,7 +9,6 @@ const usersSchema = new Schema(
     gender: {
       type: String,
       enum: ['male', 'female', 'other'],
-      unique: 'other',
       required: false,
     },
     birthDate: { type: Date, required: false },
