@@ -1,39 +1,57 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { env } from './utils/env.js';
+import router from './routers/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import cookieParser from 'cookie-parser';
 
-dotenv.config();
 const PORT = Number(env('PORT', '3000'));
 
 export const startServer = () => {
   const app = express();
 
-  app.use(express.json());
-  app.use(cors());
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // CORS yapılandırması
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://memoryorbs.app',
+  ];
+
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true, 
+    }),
+  );
+
+  app.use(
+    express.json({ type: ['application/json', 'application/vnd.api+json'] }),
+  );
 
  
+  app.use(cookieParser());
 
+  
   app.get('/', (req, res) => {
-    res.json({
-      message: 'Hello, Welcome to Memory Orbs app...!',
-    });
+    res.json({ message: 'Welcome to the Memory Orbs App API' });
   });
 
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
+  
+  app.use('/api', router);
 
-  app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
-  });
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`🌍 Mode: ${isProduction ? 'Production' : 'Development'}`);
   });
 };
