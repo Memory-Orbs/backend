@@ -65,10 +65,10 @@ const orbSchema = new mongoose.Schema(
 
     animationSeed: Number,
 
-    isLocked: {
-      type: Boolean,
-      default: false,
-    },
+    // isLocked: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     timestamps: true,
