@@ -13,6 +13,8 @@ export const startServer = () => {
 
   const isProduction = process.env.NODE_ENV === 'production';
 
+  app.set('trust proxy', 1);
+
   // CORS yapılandırması
   const allowedOrigins = [
     'http://localhost:5173',
